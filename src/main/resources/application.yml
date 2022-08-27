@@ -11,22 +11,39 @@ spring:
     name: gateway-service
   cloud:
     gateway:
+      globalcors:
+#        cors-configurations:
+#          '[/**]':
+#            allowedOrigins: "http://localhost:4200/*"
+#            allowedHeaders: "*"
+#            allowedMethods:
+#              - GET
+#              - POST
       routes:
-        - id: employeeModule
+        - id: courseProviderModule
           uri: lb://COURSE-PROVIDER-SERVICE
           predicates:
-            - Path=/cps/employee/**, /cps/course/**
-#          filters:
-#            - name: Hystrix
-#              args:
-#                name: fallbackCommand
-#                fallbackUri: forward:/fallback/message
-        - id: consumerModule
+            - Path=/cps/**
+          filters:
+            - name: Hystrix
+              args:
+                name: fallbackCommand
+                fallbackUri: forward:/fallback/message
+        - id: studentModule
           uri: lb://STUDENT-SERVICE
           predicates:
             - Path=/sts/consumer/**
-#          filters:
-#            - name: Hystrix
-#              args:
-#                name: fallbackCommand
-#                fallbackUri: forward:/fallback/message
+          filters:
+            - name: Hystrix
+              args:
+                name: fallbackCommand
+                fallbackUri: forward:/fallback/message
+        - id: smsModule
+          uri: lb://SUBSCRIPTION-MANAGEMENT-SERVICE
+          predicates:
+            - Path=/sms/**
+          filters:
+            - name: Hystrix
+              args:
+                name: fallbackCommand
+                fallbackUri: forward:/fallback/message
